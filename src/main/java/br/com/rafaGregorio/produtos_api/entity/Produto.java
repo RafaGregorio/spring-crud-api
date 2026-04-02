@@ -19,7 +19,7 @@ public class Produto {
     private Long id;
     @Column(unique = true, nullable = false)
     private String name;
-    @Column(nullable = false)
+    @Column(nullable = false, length = 500)
     private String description;
     @Column(nullable = false)
     private BigDecimal price;

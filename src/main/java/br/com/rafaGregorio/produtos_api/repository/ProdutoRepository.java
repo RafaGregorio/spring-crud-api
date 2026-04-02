@@ -7,5 +7,5 @@ import org.springframework.transaction.annotation.Transactional;
 public interface ProdutoRepository extends JpaRepository<Produto, Long> {
 
     @Transactional
-    long deleteByName(String name);
+    long deleteByIdAndName(Long id, String name);
 }

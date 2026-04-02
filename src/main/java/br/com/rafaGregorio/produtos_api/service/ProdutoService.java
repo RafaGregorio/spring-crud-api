@@ -3,7 +3,9 @@ package br.com.rafaGregorio.produtos_api.service;
 import br.com.rafaGregorio.produtos_api.entity.Produto;
 import br.com.rafaGregorio.produtos_api.repository.ProdutoRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -13,12 +15,12 @@ public class ProdutoService {
 
     private final ProdutoRepository repository;
 
-    public List<Produto> listarTodosProdutos() {
+    public List<Produto> buscarTodosProdutos() {
         return repository.findAll();
     }
 
     public Produto buscarPorId(Long id) {
-        return  repository.findById(id).orElseThrow(
+        return repository.findById(id).orElseThrow(
                 () -> new RuntimeException("Produto não encontrado")
         );
     }
@@ -46,11 +48,11 @@ public class ProdutoService {
         repository.save(produtoEntity);
     };
 
-    public void deletarProdutoPorNome(String name){
-        long produtosDeltados = repository.deleteByName(name);
+    public void deletarProduto(Long id, String name){
+        long deletados = repository.deleteByIdAndName(id, name);
 
-        if (produtosDeltados == 0) {
-            throw new RuntimeException("Produto não encontrado");
-        };
+        if (deletados == 0) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado");
+        }
     };
  }
