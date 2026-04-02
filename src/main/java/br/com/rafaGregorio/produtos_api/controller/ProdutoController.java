@@ -7,6 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
+
 
 @RestController
 @RequestMapping("/produtos")
@@ -22,9 +24,15 @@ public class ProdutoController {
     };
 
     @GetMapping
-    public ResponseEntity<Produto> buscarProdutoPorId(@RequestBody Long id){
-      return ResponseEntity.ok(service.buscarPorId(id));
-    };
+    public ResponseEntity<List<Produto>> listarProdutos(){
+        List<Produto> produtos = service.buscarTodosProdutos();
+        return ResponseEntity.ok(produtos);
+    }
+
+    @GetMapping("/buscar /{id}")
+    public ResponseEntity<Produto> buscarProdutoPorId(@PathVariable Long id){
+        return ResponseEntity.ok(service.buscarPorId(id));
+    }
 
     @PutMapping("/{id}")
     public ResponseEntity<Void> produtoAtualizadoPorId(@PathVariable Long id, @RequestBody Produto produto){
@@ -32,9 +40,9 @@ public class ProdutoController {
         return ResponseEntity.noContent().build();
     };
 
-    @DeleteMapping("/{name")
-    public ResponseEntity<Void> deletarProdutoPorNome(@PathVariable String name){
-      service.deletarProdutoPorNome(name);
+    @DeleteMapping("/{id}/{name}")
+    public ResponseEntity<Void> deletarProduto(@PathVariable Long id ,@PathVariable String name){
+      service.deletarProduto(id, name);
       return ResponseEntity.noContent().build();
     };
 }
