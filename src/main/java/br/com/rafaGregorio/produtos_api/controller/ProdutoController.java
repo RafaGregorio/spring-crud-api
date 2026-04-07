@@ -1,5 +1,8 @@
 package br.com.rafaGregorio.produtos_api.controller;
 
+import br.com.rafaGregorio.produtos_api.dto.mapper.ProdutoDTOMapper;
+import br.com.rafaGregorio.produtos_api.dto.request.ProdutoRequestDTO;
+import br.com.rafaGregorio.produtos_api.dto.response.ProdutoResponseDTO;
 import br.com.rafaGregorio.produtos_api.entity.Produto;
 import br.com.rafaGregorio.produtos_api.service.ProdutoService;
 import lombok.RequiredArgsConstructor;
@@ -18,31 +21,40 @@ public class ProdutoController {
     private final ProdutoService service;
 
     @PostMapping
-    public ResponseEntity<Void> salvarProduto(@RequestBody Produto produto){
+    public ResponseEntity<Void> salvarProduto(@RequestBody ProdutoRequestDTO dto){
+        Produto produto = ProdutoDTOMapper.toEntity(dto);
         service.salvarProduto(produto);
+
         return ResponseEntity.created(URI.create("/produtos/" + produto.getId())).build();
     };
 
     @GetMapping
-    public ResponseEntity<List<Produto>> listarProdutos(){
+    public ResponseEntity<List<ProdutoResponseDTO>> listarProdutos(){
         List<Produto> produtos = service.buscarTodosProdutos();
-        return ResponseEntity.ok(produtos);
+
+        List<ProdutoResponseDTO> response = produtos.stream()
+                .map(ProdutoDTOMapper::responseDTO)
+                .toList();
+        return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/buscar /{id}")
-    public ResponseEntity<Produto> buscarProdutoPorId(@PathVariable Long id){
-        return ResponseEntity.ok(service.buscarPorId(id));
+    @GetMapping("/{id}")
+    public ResponseEntity<ProdutoResponseDTO> buscarPorId(@PathVariable Long id){
+        Produto produto = service.buscarPorId(id);
+        return ResponseEntity.ok(ProdutoDTOMapper.responseDTO(produto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> produtoAtualizadoPorId(@PathVariable Long id, @RequestBody Produto produto){
+    public ResponseEntity<Void> atualizarPorId(@PathVariable Long id, @RequestBody ProdutoRequestDTO dto){
+        Produto produto = ProdutoDTOMapper.toEntity(dto);
+
         service.atualizarProdutoPorId(produto, id);
         return ResponseEntity.noContent().build();
     };
 
-    @DeleteMapping("/{id}/{name}")
-    public ResponseEntity<Void> deletarProduto(@PathVariable Long id ,@PathVariable String name){
-      service.deletarProduto(id, name);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletarProduto(@PathVariable Long id){
+      service.deletarProduto(id);
       return ResponseEntity.noContent().build();
     };
 }
