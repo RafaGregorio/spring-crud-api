@@ -48,11 +48,10 @@ public class ProdutoService {
         repository.save(produtoEntity);
     };
 
-    public void deletarProduto(Long id, String name){
-        long deletados = repository.deleteByIdAndName(id, name);
-
-        if (deletados == 0) {
+    public void deletarProduto(Long id){
+        if (!repository.existsById(id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado");
         }
-    };
+        repository.deleteById(id);
+    }
  }
